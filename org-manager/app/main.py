@@ -2,12 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import users, orgs, websocket
 from app.database import Base, engine
+import os
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
 # Detect environment
-import os
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
 if ENVIRONMENT == "production":
@@ -27,7 +27,7 @@ app = FastAPI(
     title="Sistema de Organização de Orgs",
     description="API para gerenciamento de organizações legais e ilegais com sincronização em tempo real",
     version="1.0.0",
-    docs_url="/docs" if ENVIRONMENT != "production" else None,  # Disable docs in production
+    docs_url="/docs" if ENVIRONMENT != "production" else None,
     redoc_url="/redoc" if ENVIRONMENT != "production" else None
 )
 
@@ -51,4 +51,5 @@ def read_root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))  # Use a porta definida pelo Railway
+    uvicorn.run(app, host="0.0.0.0", port=port)
