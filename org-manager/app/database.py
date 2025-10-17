@@ -1,24 +1,19 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-# Database configuration for multiple environments
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./orgs.db")
 
-# For Railway PostgreSQL (if provided)
-if DATABASE_URL.startswith("postgresql://"):
-    # Ensure we have psycopg2 for PostgreSQL
-    pass
-else:
-    # SQLite for development/local
-    pass
+# Engine
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {})
 
-engine = create_engine(DATABASE_URL)
+# Session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Base
 Base = declarative_base()
 
+# Dependency
 def get_db():
     db = SessionLocal()
     try:
