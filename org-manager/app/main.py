@@ -4,23 +4,21 @@ from app.routes import users, orgs, websocket
 from app.database import Base, engine
 import os
 
-# Create database tables
+# Cria tabelas
 Base.metadata.create_all(bind=engine)
 
-# Detect environment
+# Detecta ambiente
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 
 if ENVIRONMENT == "production":
-    # Production CORS - allow specific origins
     ALLOWED_ORIGINS = [
         "https://orgs-frontend.vercel.app",
         "https://orgs-frontend.netlify.app",
         "https://orgs-frontend.pages.dev",
         os.getenv("FRONTEND_URL", "")
     ]
-    ALLOWED_ORIGINS = [origin for origin in ALLOWED_ORIGINS if origin]  # Remove empty strings
+    ALLOWED_ORIGINS = [origin for origin in ALLOWED_ORIGINS if origin]
 else:
-    # Development CORS - allow all
     ALLOWED_ORIGINS = ["*"]
 
 app = FastAPI(
@@ -40,7 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Rotas
 app.include_router(users.router, prefix="/auth", tags=["authentication"])
 app.include_router(orgs.router, prefix="/orgs", tags=["organizations"])
 app.include_router(websocket.router, tags=["websockets"])
@@ -51,5 +49,5 @@ def read_root():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 8000))  # Use a porta definida pelo Railway
+    port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
