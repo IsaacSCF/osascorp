@@ -1,0 +1,8 @@
+{
+  "plugins": [
+    {
+      "name": "python",
+      "runtime": "python-3.11"
+    }
+  ]
+}
